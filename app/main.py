@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI
 
 from app.api.routes import router
 from app.core.config import settings
@@ -16,6 +17,7 @@ media_dir.mkdir(parents=True, exist_ok=True)
 
 app.mount("/frontend", StaticFiles(directory=frontend_dir), name="frontend")
 app.mount("/media", StaticFiles(directory=media_dir), name="media")
+app.mount("/frontend", StaticFiles(directory=frontend_dir), name="frontend")
 
 
 @app.get("/")

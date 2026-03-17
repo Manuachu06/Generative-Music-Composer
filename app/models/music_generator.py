@@ -4,6 +4,7 @@ import math
 import struct
 import uuid
 import wave
+import uuid
 
 
 @dataclass
@@ -18,6 +19,7 @@ class MusicGenerator:
     Current implementation generates a valid WAV preview tone so users can listen end-to-end.
     Replace with AudioCraft/MusicGen model inference for real generation.
     """
+    """Wrapper abstraction for AudioCraft/MusicGen inference."""
 
     def generate(self, prompt_tags: list[str], duration_sec: int) -> GenerationResult:
         track_id = f"track_{uuid.uuid4().hex[:10]}"
@@ -43,4 +45,5 @@ class MusicGenerator:
                 pcm = int(max(-1.0, min(1.0, sample)) * 32767)
                 wav_file.writeframesraw(struct.pack("<h", pcm))
 
+        path.write_bytes(f"placeholder audio for {prompt_tags} ({duration_sec}s)".encode("utf-8"))
         return GenerationResult(track_id=track_id, local_path=str(path))

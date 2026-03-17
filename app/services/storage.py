@@ -28,3 +28,7 @@ class StorageService:
         destination = media_root / f"{track_id}.wav"
         shutil.copy2(source_path, destination)
         return f"/media/generated/{user_id}/{track_id}.wav"
+            # Local fallback if MinIO/S3 is unavailable.
+            return f"file://{local_path}"
+        self.client.upload_file(local_path, settings.s3_bucket, key)
+        return f"s3://{settings.s3_bucket}/{key}"

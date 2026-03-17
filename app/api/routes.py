@@ -4,12 +4,16 @@ from threading import Lock
 from fastapi import APIRouter
 from kombu.exceptions import OperationalError
 
+from fastapi import APIRouter
+
 from app.api.schemas import (
     FeedbackRequest,
     GenerateMusicRequest,
     JobCreatedResponse,
     RecommendationItem,
     RecommendationsResponse,
+    RecommendationsResponse,
+    RecommendationItem,
     SavePreferenceRequest,
 )
 from app.personalization.engine import PersonalizationEngine
@@ -40,6 +44,11 @@ def generate_music(request: GenerateMusicRequest) -> JobCreatedResponse:
                 "backend": "local-sync-fallback",
             }
         return JobCreatedResponse(job_id=job_id, status="completed_local", eta_sec=0)
+
+@router.post("/music/generate", response_model=JobCreatedResponse)
+def generate_music(request: GenerateMusicRequest) -> JobCreatedResponse:
+    task = generate_bgm_job.delay(request.model_dump())
+    return JobCreatedResponse(job_id=task.id, status="queued", eta_sec=15)
 
 
 @router.get("/music/jobs/{job_id}")

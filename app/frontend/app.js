@@ -84,6 +84,21 @@ async function pollUntilDone(jobId) {
     await new Promise((resolve) => setTimeout(resolve, 1200));
   }
   setJobState("Timed out waiting for generation result.", true);
+function toPretty(data) {
+  return JSON.stringify(data, null, 2);
+}
+
+async function request(url, options) {
+  const response = await fetch(url, options);
+  const data = await response.json().catch(() => ({ error: "Invalid JSON response" }));
+  return { ok: response.ok, status: response.status, data };
+}
+
+function splitCsv(value) {
+  return value
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
 }
 
 document.getElementById("generate-form").addEventListener("submit", async (event) => {
@@ -99,6 +114,7 @@ document.getElementById("generate-form").addEventListener("submit", async (event
     audio_uri: form.get("audio_uri") || null,
     duration_sec: Number(form.get("duration_sec")),
     metadata: { source: "product-ui" },
+    metadata: { source: "frontend" },
   };
 
   const result = await request("/v1/music/generate", {
@@ -115,6 +131,15 @@ document.getElementById("generate-form").addEventListener("submit", async (event
 
   await pollUntilDone(result.data.job_id);
   btn.disabled = false;
+  document.getElementById("generate-output").textContent = toPretty(result);
+});
+
+document.getElementById("status-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = new FormData(event.target);
+  const jobId = form.get("job_id");
+  const result = await request(`/v1/music/jobs/${jobId}`);
+  document.getElementById("status-output").textContent = toPretty(result);
 });
 
 document.getElementById("preferences-form").addEventListener("submit", async (event) => {
@@ -124,12 +149,17 @@ document.getElementById("preferences-form").addEventListener("submit", async (ev
   const form = new FormData(event.target);
   const payload = {
     user_id: userId,
+  const form = new FormData(event.target);
+  const payload = {
+    user_id: form.get("user_id"),
     genres: splitCsv(form.get("genres")),
     moods: splitCsv(form.get("moods")),
     instruments: splitCsv(form.get("instruments")),
     target_bpm: Number(form.get("target_bpm")),
   };
   const res = await request("/v1/preferences", {
+
+  const result = await request("/v1/preferences", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -142,6 +172,15 @@ document.getElementById("recommend-btn").addEventListener("click", async () => {
   const userId = form.get("user_id");
   const res = await request(`/v1/recommendations?user_id=${encodeURIComponent(userId)}`);
   document.getElementById("recommend-output").textContent = JSON.stringify(res.data, null, 2);
+  document.getElementById("preferences-output").textContent = toPretty(result);
+});
+
+document.getElementById("recommend-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const form = new FormData(event.target);
+  const userId = form.get("user_id");
+  const result = await request(`/v1/recommendations?user_id=${encodeURIComponent(userId)}`);
+  document.getElementById("recommend-output").textContent = toPretty(result);
 });
 
 document.getElementById("feedback-form").addEventListener("submit", async (event) => {
@@ -157,6 +196,16 @@ document.getElementById("feedback-form").addEventListener("submit", async (event
     skipped: form.get("skipped") === "on",
   };
   const res = await request("/v1/feedback", {
+  const payload = {
+    user_id: form.get("user_id"),
+    track_id: form.get("track_id"),
+    completion: Number(form.get("completion")),
+    skipped: form.get("skipped") === "on",
+    liked: form.get("liked") === "on",
+    replayed: form.get("replayed") === "on",
+  };
+
+  const result = await request("/v1/feedback", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -165,3 +214,5 @@ document.getElementById("feedback-form").addEventListener("submit", async (event
 });
 
 renderTrackList();
+  document.getElementById("feedback-output").textContent = toPretty(result);
+});
