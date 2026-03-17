@@ -1,0 +1,68 @@
+:root {
+  color-scheme: light dark;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+header {
+  padding: 1.2rem 1rem;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+
+h1, h2 {
+  margin: 0 0 0.5rem;
+}
+
+main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.card {
+  background: #111827;
+  border: 1px solid #374151;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+form {
+  display: grid;
+  gap: 0.6rem;
+}
+
+label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+input, textarea, button {
+  border-radius: 8px;
+  border: 1px solid #4b5563;
+  padding: 0.5rem;
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+  border-color: #1d4ed8;
+}
+
+pre {
+  background: #020617;
+  color: #93c5fd;
+  border-radius: 8px;
+  padding: 0.75rem;
+  min-height: 90px;
+  overflow: auto;
+}
