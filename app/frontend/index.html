@@ -3,6 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auralis AI • Personalized Ambient Music</title>
+  <link rel="stylesheet" href="/frontend/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Auralis AI</h1>
+      <p>Generate and listen to personalized ambient BGM instantly.</p>
+    </div>
+    <span class="badge">Multimodal SaaS Demo</span>
+  </header>
+
+  <main class="layout">
+    <section class="panel composer">
+      <h2>Compose Track</h2>
+      <form id="generate-form" class="form-grid">
+        <label>User ID
+          <input name="user_id" value="user_123" required />
+        </label>
+        <label>Duration (sec)
+          <input name="duration_sec" type="number" min="10" max="180" value="30" />
+        </label>
+        <label class="full">Describe your scene
+          <textarea name="text" required>A calm ambient piano background for late-night reading and focus.</textarea>
+        </label>
+        <label class="full">Audio URI (optional)
+          <input name="audio_uri" placeholder="s3://uploads/user_123/voice.wav" />
+        </label>
+        <button type="submit" id="generate-btn">Generate Music</button>
+      </form>
+      <p id="job-state" class="muted">Ready.</p>
+    </section>
+
+    <section class="panel player">
+      <h2>Now Playing</h2>
+      <div id="current-track" class="track-meta">No track generated yet.</div>
+      <audio id="audio-player" controls preload="none"></audio>
+      <div id="track-list" class="track-list"></div>
+    </section>
+
+    <section class="panel side">
+      <h3>Preferences</h3>
+      <form id="preferences-form" class="stack">
+        <label>Genres <input name="genres" value="ambient,lofi" /></label>
+        <label>Moods <input name="moods" value="calm,focused" /></label>
+        <label>Instruments <input name="instruments" value="piano,pads" /></label>
+        <label>Target BPM <input name="target_bpm" type="number" min="40" max="200" value="72" /></label>
+        <button type="submit">Save Preferences</button>
+      </form>
+
+      <h3>Recommendations</h3>
+      <button id="recommend-btn">Fetch Recommendations</button>
+      <pre id="recommend-output">[]</pre>
+
+      <h3>Feedback</h3>
+      <form id="feedback-form" class="stack">
+        <label>Track ID <input name="track_id" placeholder="auto-filled from latest track" /></label>
+        <label>Completion <input name="completion" type="number" min="0" max="1" step="0.01" value="0.9"/></label>
+        <label class="check"><input type="checkbox" name="liked" checked/> Liked</label>
+        <label class="check"><input type="checkbox" name="replayed"/> Replayed</label>
+        <label class="check"><input type="checkbox" name="skipped"/> Skipped</label>
+        <button type="submit">Send Feedback</button>
+      </form>
   <title>Generative Music Composer</title>
   <link rel="stylesheet" href="/frontend/styles.css" />
 </head>

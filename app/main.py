@@ -12,6 +12,11 @@ app = FastAPI(title=settings.app_name)
 app.include_router(router)
 
 frontend_dir = Path(__file__).parent / "frontend"
+media_dir = Path(__file__).parent / "media"
+media_dir.mkdir(parents=True, exist_ok=True)
+
+app.mount("/frontend", StaticFiles(directory=frontend_dir), name="frontend")
+app.mount("/media", StaticFiles(directory=media_dir), name="media")
 app.mount("/frontend", StaticFiles(directory=frontend_dir), name="frontend")
 
 

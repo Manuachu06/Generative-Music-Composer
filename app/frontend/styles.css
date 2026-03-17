@@ -1,4 +1,125 @@
 :root {
+  --bg: #0b1020;
+  --panel: #121a2f;
+  --line: #253253;
+  --text: #e2e8f0;
+  --muted: #9aa9c4;
+  --accent: #4f8cff;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #17213f, var(--bg));
+  color: var(--text);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  backdrop-filter: blur(4px);
+}
+
+.topbar h1 { margin: 0; }
+.topbar p { margin: 0.25rem 0 0; color: var(--muted); }
+.badge {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  color: #b7d0ff;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1.1fr 0.8fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  background: color-mix(in oklab, var(--panel), #000 10%);
+  border-radius: 14px;
+  padding: 1rem;
+  min-height: 300px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
+  gap: 0.7rem;
+}
+
+.full { grid-column: 1 / -1; }
+.stack { display: grid; gap: 0.55rem; }
+label { display: grid; gap: 0.3rem; color: var(--muted); font-size: 0.9rem; }
+
+input, textarea, button {
+  border-radius: 10px;
+  border: 1px solid #33456f;
+  padding: 0.55rem 0.65rem;
+  background: #0b1328;
+  color: var(--text);
+}
+
+textarea { min-height: 110px; resize: vertical; }
+button {
+  cursor: pointer;
+  background: linear-gradient(135deg, #2f6dfb, var(--accent));
+  color: white;
+  font-weight: 600;
+}
+button:disabled { opacity: 0.7; cursor: wait; }
+
+.muted { color: var(--muted); }
+
+.player audio {
+  width: 100%;
+  margin: 0.8rem 0;
+}
+
+.track-list {
+  display: grid;
+  gap: 0.5rem;
+  max-height: 340px;
+  overflow: auto;
+}
+
+.track-item {
+  text-align: left;
+  border: 1px solid #34466f;
+  background: #0c1733;
+}
+
+.track-item span {
+  display: block;
+  margin-top: 0.2rem;
+  color: #abc4ff;
+  font-size: 0.85rem;
+}
+
+pre {
+  max-height: 160px;
+  overflow: auto;
+  background: #0a1326;
+  border: 1px solid #2d3f69;
+  border-radius: 8px;
+  padding: 0.6rem;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 1050px) {
+  .layout { grid-template-columns: 1fr; }
   color-scheme: light dark;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 }
