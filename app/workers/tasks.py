@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from app.models.audio_pipeline import AudioPipeline
 from app.models.fusion import FusionModel
 from app.models.music_generator import MusicGenerator
@@ -35,10 +37,17 @@ def generate_bgm_job(payload: dict) -> dict:
 
     object_key = f"generated/{payload['user_id']}/{result.track_id}.wav"
     audio_uri = storage_service.upload_generated_audio(result.local_path, object_key)
+    public_audio_url = storage_service.publish_local_media(
+        source_path=result.local_path,
+        user_id=payload["user_id"],
+        track_id=result.track_id,
+    )
 
     return {
         "track_id": result.track_id,
         "audio_uri": audio_uri,
+        "audio_url": public_audio_url,
+        "filename": Path(result.local_path).name,
         "mood": text_features.mood,
         "theme": text_features.theme,
     }

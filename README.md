@@ -55,7 +55,7 @@ Production-oriented starter architecture for a multimodal SaaS that generates pe
    - Returns seed tags for adaptive prompt conditioning.
 
 7. **FastAPI backend**
-   - Generate music job submission + polling, preferences, recommendations, feedback.
+   - Generate music job submission + polling, preferences, recommendations, feedback, and browser playback-ready output URLs.
 
 8. **Async queue**
    - Celery worker job (`generate_bgm`) orchestrates full generation pipeline.
@@ -153,7 +153,7 @@ curl http://127.0.0.1:8000/health
 ```
 
 
-### 6.1) Open the front-end test UI
+### 6.1) Open the product UI
 
 After starting the API server, open:
 
@@ -161,12 +161,12 @@ After starting the API server, open:
 http://127.0.0.1:8000
 ```
 
-The UI lets you test:
-- generate BGM jobs,
-- poll job status,
-- save preferences,
-- fetch recommendations,
-- submit feedback.
+The UI provides a product-like experience with:
+- prompt-based generation,
+- auto polling until complete,
+- playable audio output in an embedded player,
+- generated track history list,
+- preference and feedback actions.
 
 ### 7) Run Celery worker (new terminal)
 
@@ -207,7 +207,7 @@ Poll job status:
 curl http://127.0.0.1:8000/v1/music/jobs/<JOB_ID>
 ```
 
-> Note: current `MusicGenerator` writes placeholder audio bytes as a scaffold. Replace `app/models/music_generator.py` with AudioCraft/MusicGen inference to generate real WAV output.
+> Note: current `MusicGenerator` generates a synthetic preview tone WAV so the product UI can play audio end-to-end. Replace `app/models/music_generator.py` with AudioCraft/MusicGen inference for true AI-generated music.
 
 ## API examples
 
