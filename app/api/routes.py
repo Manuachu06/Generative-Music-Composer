@@ -1,4 +1,8 @@
 import uuid
+from threading import Lock
+
+from fastapi import APIRouter
+from kombu.exceptions import OperationalError
 
 from fastapi import APIRouter
 
@@ -6,6 +10,8 @@ from app.api.schemas import (
     FeedbackRequest,
     GenerateMusicRequest,
     JobCreatedResponse,
+    RecommendationItem,
+    RecommendationsResponse,
     RecommendationsResponse,
     RecommendationItem,
     SavePreferenceRequest,
@@ -16,6 +22,28 @@ from app.workers.tasks import generate_bgm_job
 router = APIRouter(prefix="/v1")
 personalization_engine = PersonalizationEngine()
 
+_local_jobs: dict[str, dict] = {}
+_local_jobs_lock = Lock()
+
+
+@router.post("/music/generate", response_model=JobCreatedResponse)
+def generate_music(request: GenerateMusicRequest) -> JobCreatedResponse:
+    payload = request.model_dump()
+    try:
+        task = generate_bgm_job.delay(payload)
+        return JobCreatedResponse(job_id=task.id, status="queued", eta_sec=15)
+    except OperationalError:
+        # Fallback mode for local dev when Redis/Celery are not running.
+        result = generate_bgm_job.apply(args=[payload])
+        job_id = f"local_{uuid.uuid4().hex[:10]}"
+        with _local_jobs_lock:
+            _local_jobs[job_id] = {
+                "job_id": job_id,
+                "status": "SUCCESS" if result.successful() else "FAILURE",
+                "result": result.result,
+                "backend": "local-sync-fallback",
+            }
+        return JobCreatedResponse(job_id=job_id, status="completed_local", eta_sec=0)
 
 @router.post("/music/generate", response_model=JobCreatedResponse)
 def generate_music(request: GenerateMusicRequest) -> JobCreatedResponse:
@@ -25,6 +53,10 @@ def generate_music(request: GenerateMusicRequest) -> JobCreatedResponse:
 
 @router.get("/music/jobs/{job_id}")
 def get_job(job_id: str) -> dict:
+    if job_id.startswith("local_"):
+        with _local_jobs_lock:
+            return _local_jobs.get(job_id, {"job_id": job_id, "status": "NOT_FOUND"})
+
     result = generate_bgm_job.AsyncResult(job_id)
     payload = {"job_id": job_id, "status": result.status}
     if result.successful():

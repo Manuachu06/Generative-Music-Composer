@@ -83,6 +83,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+### 3) Start Redis (optional but recommended)
 ### 3) Start Redis
 
 If Redis is installed locally:
@@ -97,6 +98,7 @@ Or using Docker:
 docker run --name bgm-redis -p 6379:6379 redis:7
 ```
 
+### 4) Start MinIO (optional local S3-compatible storage)
 ### 4) Start MinIO (local S3-compatible storage)
 
 ```bash
@@ -173,6 +175,18 @@ The UI lets you test:
 ```bash
 celery -A app.workers.celery_app.celery_app worker --loglevel=info
 ```
+
+### Redis connection error fix (WinError 10061)
+
+If you see `Error 10061 connecting to localhost:6379`, Redis is not running.
+You now have **two options**:
+
+1. Start Redis (recommended for real async queue behavior), or
+2. Keep Redis off and use built-in local fallback mode. In fallback mode, `/v1/music/generate` runs synchronously and returns `status: "completed_local"`.
+
+This means the API and UI can still be tested without Redis/Celery running.
+
+If MinIO/S3 is not available, generated output URI falls back to `file://...` for local testing.
 
 ### 8) Test generation flow
 
