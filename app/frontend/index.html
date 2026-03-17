@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generative Music Composer</title>
+  <link rel="stylesheet" href="/frontend/styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Generative Music Composer</h1>
+    <p>Test the multimodal BGM APIs from a simple UI.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Generate BGM Job</h2>
+      <form id="generate-form">
+        <label>User ID <input name="user_id" value="user_123" required /></label>
+        <label>Text prompt <textarea name="text" required>A calm ambient piano background for studying.</textarea></label>
+        <label>Audio URI (optional) <input name="audio_uri" placeholder="s3://uploads/user_123/voice.wav" /></label>
+        <label>Duration (sec) <input name="duration_sec" type="number" min="10" max="180" value="30" /></label>
+        <button type="submit">Submit generation job</button>
+      </form>
+      <pre id="generate-output">No job submitted yet.</pre>
+    </section>
+
+    <section class="card">
+      <h2>Poll Job Status</h2>
+      <form id="status-form">
+        <label>Job ID <input name="job_id" placeholder="Paste job id" required /></label>
+        <button type="submit">Check status</button>
+      </form>
+      <pre id="status-output">No status requested yet.</pre>
+    </section>
+
+    <section class="card">
+      <h2>Save Preferences</h2>
+      <form id="preferences-form">
+        <label>User ID <input name="user_id" value="user_123" required /></label>
+        <label>Genres (comma-separated) <input name="genres" value="ambient,lofi" /></label>
+        <label>Moods (comma-separated) <input name="moods" value="calm,focused" /></label>
+        <label>Instruments (comma-separated) <input name="instruments" value="piano,pads" /></label>
+        <label>Target BPM <input name="target_bpm" type="number" min="40" max="200" value="72" /></label>
+        <button type="submit">Save preferences</button>
+      </form>
+      <pre id="preferences-output">No preferences submitted yet.</pre>
+    </section>
+
+    <section class="card">
+      <h2>Get Recommendations</h2>
+      <form id="recommend-form">
+        <label>User ID <input name="user_id" value="user_123" required /></label>
+        <button type="submit">Fetch recommendations</button>
+      </form>
+      <pre id="recommend-output">No recommendations fetched yet.</pre>
+    </section>
+
+    <section class="card">
+      <h2>Send Feedback</h2>
+      <form id="feedback-form">
+        <label>User ID <input name="user_id" value="user_123" required /></label>
+        <label>Track ID <input name="track_id" value="track_demo" required /></label>
+        <label>Completion (0..1) <input name="completion" type="number" step="0.01" min="0" max="1" value="0.9" /></label>
+        <label><input type="checkbox" name="skipped" /> Skipped</label>
+        <label><input type="checkbox" name="liked" checked /> Liked</label>
+        <label><input type="checkbox" name="replayed" /> Replayed</label>
+        <button type="submit">Send feedback</button>
+      </form>
+      <pre id="feedback-output">No feedback sent yet.</pre>
+    </section>
+  </main>
+
+  <script src="/frontend/app.js"></script>
+</body>
+</html>

@@ -152,6 +152,22 @@ Health check:
 curl http://127.0.0.1:8000/health
 ```
 
+
+### 6.1) Open the front-end test UI
+
+After starting the API server, open:
+
+```
+http://127.0.0.1:8000
+```
+
+The UI lets you test:
+- generate BGM jobs,
+- poll job status,
+- save preferences,
+- fetch recommendations,
+- submit feedback.
+
 ### 7) Run Celery worker (new terminal)
 
 ```bash
