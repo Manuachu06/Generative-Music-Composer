@@ -3,136 +3,188 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auralis AI • Personalized Ambient Music</title>
+  <title>Auralis Studio</title>
   <link rel="stylesheet" href="/frontend/styles.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div>
-      <h1>Auralis AI</h1>
-      <p>Generate and listen to personalized ambient BGM instantly.</p>
+  <header class="hero">
+    <div class="hero__copy">
+      <p class="eyebrow">Voice-guided music product</p>
+      <h1>Auralis Studio</h1>
+      <p class="hero__lede">
+        Generate instrumental music from prompts, voice commands, or a sung motif.
+        The app analyzes audio in memory and returns an instant playable draft without storing the track locally.
+      </p>
+      <div class="hero__chips">
+        <span>Text + Voice + Singing</span>
+        <span>No local music storage</span>
+        <span>Frontend + Backend product flow</span>
+      </div>
     </div>
-    <span class="badge">Multimodal SaaS Demo</span>
+    <div class="hero__status panel">
+      <h2>Product status</h2>
+      <dl id="overview-list" class="overview-list"></dl>
+    </div>
   </header>
 
-  <main class="layout">
-    <section class="panel composer">
-      <h2>Compose Track</h2>
-      <form id="generate-form" class="form-grid">
-        <label>User ID
-          <input name="user_id" value="user_123" required />
+  <main class="dashboard">
+    <section class="panel composer-panel">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Composer</p>
+          <h2>Create a new track</h2>
+        </div>
+        <span id="job-state" class="status-pill">Ready</span>
+      </div>
+
+      <form id="generate-form" class="composer-form">
+        <div class="grid two">
+          <label>User ID
+            <input name="user_id" value="creator_001" required />
+          </label>
+          <label>Duration
+            <input name="duration_sec" type="number" value="30" min="10" max="90" />
+          </label>
+        </div>
+
+        <label>What should the music do?
+          <textarea name="text" required>Build a polished focus soundtrack for a productivity app: warm keys, soft pulse, and a gentle sense of progress.</textarea>
         </label>
-        <label>Duration (sec)
-          <input name="duration_sec" type="number" min="10" max="180" value="30" />
+
+        <div class="grid two">
+          <label>Time of day
+            <input name="time_of_day" value="late night" />
+          </label>
+          <label>Activity
+            <input name="activity" value="deep work" />
+          </label>
+        </div>
+
+        <div class="grid two">
+          <label>Mood hint
+            <input name="mood_hint" value="calm but premium" />
+          </label>
+          <label>Use case
+            <input name="use_case" value="app onboarding + focus mode" />
+          </label>
+        </div>
+
+        <label>Voice command transcript
+          <textarea id="voice-command-text" name="voice_command_text" placeholder="Describe the change you want with your voice, or use speech-to-text below."></textarea>
         </label>
-        <label class="full">Describe your scene
-          <textarea name="text" required>A calm ambient piano background for late-night reading and focus.</textarea>
-        </label>
-        <label class="full">Audio URI (optional)
-          <input name="audio_uri" placeholder="s3://uploads/user_123/voice.wav" />
-        </label>
-        <button type="submit" id="generate-btn">Generate Music</button>
+
+        <div class="voice-tools">
+          <button type="button" id="speech-btn" class="secondary">Use speech-to-text</button>
+          <button type="button" id="record-btn" class="secondary">Record sung reference</button>
+          <span id="recording-status" class="muted">No audio reference recorded.</span>
+        </div>
+
+        <details class="advanced-box">
+          <summary>Production controls</summary>
+          <div class="grid two">
+            <label>Genres
+              <input name="genres" value="ambient,lofi" />
+            </label>
+            <label>Moods
+              <input name="moods" value="focused,calm" />
+            </label>
+            <label>Instruments
+              <input name="instruments" value="piano,pads,subtle percussion" />
+            </label>
+            <label>Target BPM
+              <input name="target_bpm" type="number" min="40" max="200" value="84" />
+            </label>
+          </div>
+          <label class="check-row">
+            <input type="checkbox" name="vocals_allowed" /> Allow vocal textures in generation prompt
+          </label>
+          <label class="check-row">
+            <input type="checkbox" name="retain_output" /> Upload externally if storage is configured
+          </label>
+        </details>
+
+        <button type="submit" id="generate-btn">Generate product-ready draft</button>
       </form>
-      <p id="job-state" class="muted">Ready.</p>
     </section>
 
-    <section class="panel player">
-      <h2>Now Playing</h2>
-      <div id="current-track" class="track-meta">No track generated yet.</div>
+    <section class="panel playback-panel">
+      <div class="section-heading">
+        <div>
+          <p class="section-label">Playback</p>
+          <h2>Latest result</h2>
+        </div>
+      </div>
+
+      <div id="current-track" class="current-track empty">
+        No draft generated yet.
+      </div>
       <audio id="audio-player" controls preload="none"></audio>
-      <div id="track-list" class="track-list"></div>
+      <div id="waveform" class="waveform"></div>
+      <div id="track-history" class="track-history"></div>
     </section>
 
-    <section class="panel side">
-      <h3>Preferences</h3>
-      <form id="preferences-form" class="stack">
-        <label>Genres <input name="genres" value="ambient,lofi" /></label>
-        <label>Moods <input name="moods" value="calm,focused" /></label>
-        <label>Instruments <input name="instruments" value="piano,pads" /></label>
-        <label>Target BPM <input name="target_bpm" type="number" min="40" max="200" value="72" /></label>
-        <button type="submit">Save Preferences</button>
-      </form>
+    <aside class="panel side-panel">
+      <section>
+        <p class="section-label">Preferences</p>
+        <h3>Save creator profile</h3>
+        <form id="preferences-form" class="stack-form">
+          <label>User ID
+            <input name="user_id" value="creator_001" required />
+          </label>
+          <label>Genres
+            <input name="genres" value="ambient,lofi" />
+          </label>
+          <label>Moods
+            <input name="moods" value="focused,calm" />
+          </label>
+          <label>Instruments
+            <input name="instruments" value="piano,pads" />
+          </label>
+          <label>Target BPM
+            <input name="target_bpm" type="number" value="82" min="40" max="200" />
+          </label>
+          <label class="check-row">
+            <input type="checkbox" name="vocals_allowed" /> Allow vocal ideas
+          </label>
+          <button type="submit" class="secondary">Save profile</button>
+        </form>
+      </section>
 
-      <h3>Recommendations</h3>
-      <button id="recommend-btn">Fetch Recommendations</button>
-      <pre id="recommend-output">[]</pre>
+      <section>
+        <p class="section-label">Ideas</p>
+        <h3>Recommendations</h3>
+        <button id="recommend-btn" class="secondary">Refresh ideas</button>
+        <div id="recommendations" class="recommendations"></div>
+      </section>
 
-      <h3>Feedback</h3>
-      <form id="feedback-form" class="stack">
-        <label>Track ID <input name="track_id" placeholder="auto-filled from latest track" /></label>
-        <label>Completion <input name="completion" type="number" min="0" max="1" step="0.01" value="0.9"/></label>
-        <label class="check"><input type="checkbox" name="liked" checked/> Liked</label>
-        <label class="check"><input type="checkbox" name="replayed"/> Replayed</label>
-        <label class="check"><input type="checkbox" name="skipped"/> Skipped</label>
-        <button type="submit">Send Feedback</button>
-      </form>
-  <title>Generative Music Composer</title>
-  <link rel="stylesheet" href="/frontend/styles.css" />
-</head>
-<body>
-  <header>
-    <h1>Generative Music Composer</h1>
-    <p>Test the multimodal BGM APIs from a simple UI.</p>
-  </header>
-
-  <main>
-    <section class="card">
-      <h2>Generate BGM Job</h2>
-      <form id="generate-form">
-        <label>User ID <input name="user_id" value="user_123" required /></label>
-        <label>Text prompt <textarea name="text" required>A calm ambient piano background for studying.</textarea></label>
-        <label>Audio URI (optional) <input name="audio_uri" placeholder="s3://uploads/user_123/voice.wav" /></label>
-        <label>Duration (sec) <input name="duration_sec" type="number" min="10" max="180" value="30" /></label>
-        <button type="submit">Submit generation job</button>
-      </form>
-      <pre id="generate-output">No job submitted yet.</pre>
-    </section>
-
-    <section class="card">
-      <h2>Poll Job Status</h2>
-      <form id="status-form">
-        <label>Job ID <input name="job_id" placeholder="Paste job id" required /></label>
-        <button type="submit">Check status</button>
-      </form>
-      <pre id="status-output">No status requested yet.</pre>
-    </section>
-
-    <section class="card">
-      <h2>Save Preferences</h2>
-      <form id="preferences-form">
-        <label>User ID <input name="user_id" value="user_123" required /></label>
-        <label>Genres (comma-separated) <input name="genres" value="ambient,lofi" /></label>
-        <label>Moods (comma-separated) <input name="moods" value="calm,focused" /></label>
-        <label>Instruments (comma-separated) <input name="instruments" value="piano,pads" /></label>
-        <label>Target BPM <input name="target_bpm" type="number" min="40" max="200" value="72" /></label>
-        <button type="submit">Save preferences</button>
-      </form>
-      <pre id="preferences-output">No preferences submitted yet.</pre>
-    </section>
-
-    <section class="card">
-      <h2>Get Recommendations</h2>
-      <form id="recommend-form">
-        <label>User ID <input name="user_id" value="user_123" required /></label>
-        <button type="submit">Fetch recommendations</button>
-      </form>
-      <pre id="recommend-output">No recommendations fetched yet.</pre>
-    </section>
-
-    <section class="card">
-      <h2>Send Feedback</h2>
-      <form id="feedback-form">
-        <label>User ID <input name="user_id" value="user_123" required /></label>
-        <label>Track ID <input name="track_id" value="track_demo" required /></label>
-        <label>Completion (0..1) <input name="completion" type="number" step="0.01" min="0" max="1" value="0.9" /></label>
-        <label><input type="checkbox" name="skipped" /> Skipped</label>
-        <label><input type="checkbox" name="liked" checked /> Liked</label>
-        <label><input type="checkbox" name="replayed" /> Replayed</label>
-        <button type="submit">Send feedback</button>
-      </form>
-      <pre id="feedback-output">No feedback sent yet.</pre>
-    </section>
+      <section>
+        <p class="section-label">Learning loop</p>
+        <h3>Track feedback</h3>
+        <form id="feedback-form" class="stack-form">
+          <label>User ID
+            <input name="user_id" value="creator_001" required />
+          </label>
+          <label>Track ID
+            <input name="track_id" placeholder="Auto-filled after generation" />
+          </label>
+          <label>Completion
+            <input name="completion" type="number" step="0.01" min="0" max="1" value="0.9" />
+          </label>
+          <label class="check-row"><input type="checkbox" name="liked" checked /> Liked</label>
+          <label class="check-row"><input type="checkbox" name="replayed" /> Replayed</label>
+          <label class="check-row"><input type="checkbox" name="skipped" /> Skipped</label>
+          <button type="submit" class="secondary">Send feedback</button>
+        </form>
+      </section>
+    </aside>
   </main>
+
+  <template id="history-item-template">
+    <button class="history-item">
+      <strong class="history-item__title"></strong>
+      <span class="history-item__meta"></span>
+    </button>
+  </template>
 
   <script src="/frontend/app.js"></script>
 </body>
